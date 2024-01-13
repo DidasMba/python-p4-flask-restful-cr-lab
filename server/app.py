@@ -1,27 +1,14 @@
-#!/usr/bin/env python3
+# server/app.py
 
-from flask import Flask, jsonify, request, make_response
-from flask_migrate import Migrate
-from flask_restful import Api, Resource
-
-from models import db, Plant
+from flask import Flask
+from .models import db
+from .controllers import get_plants, get_plant, create_plant
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///plants.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.json.compact = True
-
-migrate = Migrate(app, db)
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///plants.db"
 db.init_app(app)
 
-api = Api(app)
+app.route("/plants", methods=["GET"])(get_plants)
+app.route("/plants/<int:id>", methods=["GET"])(get_plant)
+app.route("/plants", methods=["POST"])(create_plant)
 
-class Plants(Resource):
-    pass
-
-class PlantByID(Resource):
-    pass
-        
-
-if __name__ == '__main__':
-    app.run(port=5555, debug=True)
